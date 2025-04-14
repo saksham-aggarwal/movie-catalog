@@ -15,17 +15,17 @@ const App = () => {
   // Search function
   const handleSearch = (query) => {
     setSearchQuery(query);
-    
+
     if (query.trim() === '') {
       setSearchResults([]);
       return;
     }
-    
+
     // Filter movies based on search query
-    const filteredMovies = mockMovies.filter(movie => 
+    const filteredMovies = mockMovies.filter(movie =>
       movie.title.toLowerCase().includes(query.toLowerCase())
     );
-    
+
     setSearchResults(filteredMovies);
     setCurrentPage(1); // Reset to first page on new search
   };
@@ -47,38 +47,38 @@ const App = () => {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">Movie Catalog</h1>
           <p className="text-gray-600">Search for your favorite movies</p>
         </header>
-        
+
         {/* Search input */}
-        <SearchBar 
-          searchQuery={searchQuery} 
-          onSearch={handleSearch} 
-          resultsCount={searchResults.length} 
+        <SearchBar
+          searchQuery={searchQuery}
+          onSearch={handleSearch}
+          resultsCount={searchResults.length}
         />
-        
+
         {/* Results */}
         <div className="space-y-4">
           {getCurrentItems().map(movie => (
-            <MovieCard 
-              key={movie.id} 
-              movie={movie} 
+            <MovieCard
+              key={movie.id}
+              movie={movie}
               onClick={setSelectedMovie}
             />
           ))}
-          
+
           {searchQuery && searchResults.length === 0 && (
             <div className="text-center py-8">
               <p className="text-gray-600">No movies found matching "{searchQuery}"</p>
               <p className="text-sm mt-2">Try searching for a different title</p>
             </div>
           )}
-          
+
           {!searchQuery && (
             <div className="text-center py-16">
               <p className="text-gray-600">Enter a movie title to search</p>
             </div>
           )}
         </div>
-        
+
         {/* Pagination */}
         {searchResults.length > itemsPerPage && (
           <Pagination
@@ -87,11 +87,11 @@ const App = () => {
             onPageChange={setCurrentPage}
           />
         )}
-        
+
         {/* Movie Details Modal */}
         {selectedMovie && (
-          <MovieDetails 
-            movie={selectedMovie} 
+          <MovieDetails
+            movie={selectedMovie}
             onClose={() => setSelectedMovie(null)}
           />
         )}

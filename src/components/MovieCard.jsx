@@ -15,7 +15,7 @@ const MovieCard = ({ movie, onClick }) => {
           />
         </div>
         <div className="flex-grow">
-          <h3 className="text-lg font-semibold">{movie.title}</h3>
+          <h3 className="text-lg text-gray-600 font-semibold">{movie.title}</h3>
           <p className="text-sm text-gray-600">{movie.year} • {movie.genre}</p>
           <p className="text-sm mt-1">Director: {movie.director}</p>
           <p className="text-sm text-amber-600 font-medium mt-1">Rating: {movie.rating}/10</p>
