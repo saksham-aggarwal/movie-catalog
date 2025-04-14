@@ -1,86 +1,114 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SearchBar from './components/SearchBar';
 import MovieCard from './components/MovieCard';
 import MovieDetails from './components/MovieDetails';
 import Pagination from './components/Pagination';
-import { mockMovies } from './data/mockMovies';
+import { searchMovies, getPopularMovies } from './services/movieApi';
+import ViewToggle from './components/ViewToggle';
+import SortFilter from './components/SortFilter';
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const itemsPerPage = 5;
+  const [itemsPerPage] = useState(5);
 
-  // Search function
+  const [movies, setMovies] = useState([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [viewType, setViewType] = useState('list'); // 'list' or 'grid'
+  const [sortBy, setSortBy] = useState('year');
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const data = searchQuery
+          ? await searchMovies(searchQuery, currentPage, itemsPerPage)
+          : await getPopularMovies(currentPage, itemsPerPage);
+
+        // Sort movies based on selected criteria
+        const sortedMovies = data.results.sort((a, b) => {
+          if (sortBy === 'year') {
+            return b.year - a.year;
+          }
+          return b.rating - a.rating;
+        });
+
+        setMovies(sortedMovies);
+        setTotalPages(data.totalPages);
+        setTotalResults(data.totalResults);
+
+      } catch (err) {
+        setError('Failed to fetch movies');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, [searchQuery, currentPage, itemsPerPage, sortBy]);
+
   const handleSearch = (query) => {
     setSearchQuery(query);
-
-    if (query.trim() === '') {
-      setSearchResults([]);
-      return;
-    }
-
-    // Filter movies based on search query
-    const filteredMovies = mockMovies.filter(movie =>
-      movie.title.toLowerCase().includes(query.toLowerCase())
-    );
-
-    setSearchResults(filteredMovies);
-    setCurrentPage(1); // Reset to first page on new search
+    setCurrentPage(1);
   };
-
-  // Get current page items
-  const getCurrentItems = () => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return searchResults.slice(startIndex, endIndex);
-  };
-
-  // Calculate total pages
-  const totalPages = Math.max(1, Math.ceil(searchResults.length / itemsPerPage));
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-7xl mx-auto px-4">
         <header className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Movie Catalog</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Movie Vault</h1>
           <p className="text-gray-600">Search for your favorite movies</p>
         </header>
 
-        {/* Search input */}
         <SearchBar
           searchQuery={searchQuery}
           onSearch={handleSearch}
-          resultsCount={searchResults.length}
+          resultsCount={totalResults}
         />
 
-        {/* Results */}
-        <div className="space-y-4">
-          {getCurrentItems().map(movie => (
-            <MovieCard
-              key={movie.id}
-              movie={movie}
-              onClick={setSelectedMovie}
-            />
-          ))}
-
-          {searchQuery && searchResults.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-gray-600">No movies found matching "{searchQuery}"</p>
-              <p className="text-sm mt-2">Try searching for a different title</p>
-            </div>
-          )}
-
-          {!searchQuery && (
-            <div className="text-center py-16">
-              <p className="text-gray-600">Enter a movie title to search</p>
-            </div>
-          )}
+        <div className="flex justify-between items-center mb-6">
+          <ViewToggle viewType={viewType} onViewChange={setViewType} />
+          <SortFilter sortBy={sortBy} onSortChange={setSortBy} />
         </div>
 
-        {/* Pagination */}
-        {searchResults.length > itemsPerPage && (
+        {loading ? (
+          <div className="text-center py-8">
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-red-600">{error}</p>
+          </div>
+        ) : (
+          <div className={`${viewType === 'grid'
+            ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6'
+            : 'space-y-4'
+            }`}>
+            {movies.map(movie => (
+              <MovieCard
+                key={movie.id}
+                movie={movie}
+                onClick={setSelectedMovie}
+                viewType={viewType}
+              />
+            ))}
+
+            {searchQuery && movies.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-600">No movies found matching "{searchQuery}"</p>
+                <p className="text-sm mt-2">Try searching for a different title</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {totalPages > 1 && !loading && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
@@ -88,7 +116,6 @@ const App = () => {
           />
         )}
 
-        {/* Movie Details Modal */}
         {selectedMovie && (
           <MovieDetails
             movie={selectedMovie}

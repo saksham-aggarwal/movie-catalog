@@ -6,7 +6,7 @@ const MovieDetails = ({ movie, onClose }) => {
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-screen overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
-            <h2 className="text-2xl font-bold">{movie.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-600">{movie.title}</h2>
             <button 
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700"
@@ -20,7 +20,7 @@ const MovieDetails = ({ movie, onClose }) => {
               <img 
                 src={movie.poster} 
                 alt={`${movie.title} poster`} 
-                className="w-48 h-72 rounded object-cover"
+                className="w-48 h-72 rounded object-cover text-gray-600"
               />
             </div>
             
@@ -31,12 +31,12 @@ const MovieDetails = ({ movie, onClose }) => {
               </div>
               
               <div className="mb-4">
-                <h3 className="text-lg font-medium mb-1">Director</h3>
-                <p>{movie.director}</p>
+                <h3 className="text-lg font-medium mb-1 text-gray-600">Director</h3>
+                <p className="text-gray-600">{movie.director}</p>
               </div>
               
               <div>
-                <h3 className="text-lg font-medium mb-1">Plot</h3>
+                <h3 className="text-lg font-medium mb-1 text-gray-600">Plot</h3>
                 <p className="text-gray-700">{movie.plot}</p>
               </div>
             </div>
@@ -45,7 +45,7 @@ const MovieDetails = ({ movie, onClose }) => {
           <div className="mt-6 text-right">
             <button 
               onClick={onClose}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-white text-gray-800 border-2 border-gray-800 rounded-lg hover:bg-gray-800 hover:text-white transition-all duration-200"
             >
               Close
             </button>
