@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:build": "docker build -t movies-catalogue .",
+    "docker:run": "docker run --env-file .env.production -d -p 4001:4001 --name movies-app movies-catalogue",
+    "docker:stop": "docker stop movies-app && docker rm movies-app"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",
