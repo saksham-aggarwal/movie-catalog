@@ -1,17 +1,30 @@
-import React from 'react';
-import { SortDesc } from 'lucide-react';
+// src/components/SortFilter.js
+import { SortAsc, SortDesc } from 'lucide-react';
 
 const SortFilter = ({ sortBy, onSortChange }) => {
+  const sortOptions = [
+    { value: 'year', label: 'Release Year' },
+    { value: 'title', label: 'Title' },
+    { value: 'rating', label: 'Rating' },
+  ];
+
   return (
-    <div className="flex items-center gap-2">
-      <SortDesc className="text-gray-400" size={20} />
+    <div className="flex items-center">
+      <label htmlFor="sort-by" className="mr-2 text-sm text-gray-700 whitespace-nowrap">
+        <SortDesc className="h-4 w-4 inline-block mr-1" />
+        Sort by:
+      </label>
       <select
+        id="sort-by"
         value={sortBy}
         onChange={(e) => onSortChange(e.target.value)}
-        className="px-3 py-2 rounded-lg border border-gray-200 hover:border-gray-300 focus:ring-2 focus:ring-gray-100 focus:border-gray-300 outline-none transition-all text-gray-600 bg-white"
+        className="border border-gray-300 rounded-md p-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
       >
-        <option value="year">Sort by Year</option>
-        <option value="rating">Sort by Rating</option>
+        {sortOptions.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </select>
     </div>
   );
