@@ -7,7 +7,8 @@ export const useMovies = (searchQuery, currentPage, itemsPerPage, sortBy) => {
     loading: true,
     error: null,
     apiPage: 1,
-    totalApiResults: 0
+    totalApiResults: 0,
+    lastSearchQuery: ''
   });
 
   // Calculate which API page we need based on client page
@@ -22,12 +23,13 @@ export const useMovies = (searchQuery, currentPage, itemsPerPage, sortBy) => {
         setState(prev => ({ ...prev, loading: true, error: null }));
         
         const newApiPage = calculateApiPage(currentPage);
+        const queryChanged = searchQuery !== state.lastSearchQuery;
         
         // Fetch new data if:
         // 1. API page changes
         // 2. Search query changes
         // 3. No movies loaded yet
-        if (newApiPage !== state.apiPage || searchQuery || state.allMovies.length === 0) {
+        if (newApiPage !== state.apiPage || queryChanged || state.allMovies.length === 0) {
           const data = searchQuery
             ? await searchMovies(searchQuery, newApiPage)
             : await getPopularMovies(newApiPage);
@@ -36,7 +38,8 @@ export const useMovies = (searchQuery, currentPage, itemsPerPage, sortBy) => {
             ...prev,
             allMovies: data.results,
             apiPage: newApiPage,
-            totalApiResults: data.totalResults
+            totalApiResults: data.totalResults,
+            lastSearchQuery: searchQuery
           }));
         }
       } catch (err) {
@@ -50,7 +53,7 @@ export const useMovies = (searchQuery, currentPage, itemsPerPage, sortBy) => {
     };
 
     fetchMovies();
-  }, [searchQuery, currentPage, itemsPerPage, state.apiPage]);
+  }, [searchQuery, currentPage, itemsPerPage]);
 
   const sortMovies = (movies, sortBy) => {
     return [...movies].sort((a, b) => {

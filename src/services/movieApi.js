@@ -2,12 +2,18 @@ import { mockMovies } from '../data/mockMovies';
 
 // Environment variables with fallback values for missing configurations
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const AUTH_TOKEN = import.meta.env.VITE_TMDB_AUTH_TOKEN;
 const IMG_URL = import.meta.env.VITE_TMDB_IMG_URL
+
+// Add headers configuration
+const headers = {
+  'Authorization': `Bearer ${AUTH_TOKEN}`,
+  'Content-Type': 'application/json'
+};
 
 // Validate if API key is available
 const isApiKeyAvailable = () => {
-  if (!API_KEY) {
+  if (!AUTH_TOKEN) {
     console.warn('API key not found. Using mock data instead.');
     return false;
   }
@@ -21,9 +27,8 @@ export const searchMovies = async (query, page = 1) => {
   }
 
   try {
-    const response = await fetch(
-      `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}&page=${page}`
-    );
+    const url = `${BASE_URL}/search/movie?query=${query}&page=${page}`;
+    const response = await fetch(url, { headers });
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
@@ -36,14 +41,9 @@ export const searchMovies = async (query, page = 1) => {
       .filter(movie => movie.title.toLowerCase().includes(query.toLowerCase()))
       .map(formatMovieData);
 
-    // // Adjust total results to reflect title-only matches
-    // const titleMatchCount = data.results.filter(movie =>
-    //   movie.title.toLowerCase().includes(query.toLowerCase())
-    // ).length;
-
     return {
       results,
-      totalResults: data.total_results,
+      totalResults: results.length,
       totalPages: data.total_pages
     };
   } catch (error) {
@@ -60,9 +60,8 @@ export const getPopularMovies = async (page = 1) => {
   }
 
   try {
-    const response = await fetch(
-      `${BASE_URL}/movie/popular?api_key=${API_KEY}&page=1`
-    );
+    const url = `${BASE_URL}/movie/popular?page=${page}`;
+    const response = await fetch(url, { headers });
 
     if (!response.ok) {
       throw new Error(`API request failed with status ${response.status}`);
@@ -71,8 +70,6 @@ export const getPopularMovies = async (page = 1) => {
     const data = await response.json();
 
     const results = data.results.map(formatMovieData);
-
-    console.log(data);
 
     return {
       results,
@@ -98,8 +95,8 @@ const formatMovieData = (movie) => ({
   rating: movie.vote_average || movie.rating || 0,
   poster: movie.poster_path
     ? `${IMG_URL}${movie.poster_path}`
-    : movie.poster || '/api/placeholder/200/300',
-  releaseDate: movie.release_date ? `${new Date(movie.release_date).getMonth()}-${new Date(movie.release_date).getDate()}-${new Date(movie.release_date).getFullYear()}` : "N/A",
+    : movie.poster || null,
+  releaseDate: movie.release_date || "N/A",
   originalLanguage: movie.original_language || "N/A",
 });
 
