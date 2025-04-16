@@ -2,19 +2,8 @@
 import { Calendar, Star, Film, Info } from 'lucide-react';
 
 const MovieCard = ({ movie, onClick, viewType }) => {
-  // const {
-  //   id,
-  //   title,
-  //   poster,
-  //   release_date,
-  //   vote_average,
-  //   overview
-  // } = movie;
 
-  // Mock image URL (in real app, use the actual URL from an API)
-  const posterUrl = movie.poster 
-    ?  movie.poster
-    : `/api/placeholder/300/450`;
+  const posterUrl = movie.poster;
 
   if (viewType === 'grid') {
     return (

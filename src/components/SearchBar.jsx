@@ -6,7 +6,6 @@ const SearchBar = ({ searchQuery, onSearch, resultsCount }) => {
   const [localQuery, setLocalQuery] = useState(searchQuery);
   const inputRef = useRef(null);
 
-  // Sync local state with prop when searchQuery changes externally
   useEffect(() => {
     setLocalQuery(searchQuery);
   }, [searchQuery]);

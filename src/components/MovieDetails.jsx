@@ -32,9 +32,7 @@ const MovieDetails = ({ movie, onClose }) => {
   };
 
   // Mock image URL
-  const posterUrl = movie.poster
-    ? movie.poster
-    : `/api/placeholder/400/600`;
+  const posterUrl = movie.poster;
 
   // Format runtime (normally would come from API)
   const formatRuntime = (minutes) => {
