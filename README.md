@@ -33,7 +33,7 @@ A Simple React application for browsing and searching movies with filtering, sor
 
 ```bash
 git clone https://github.com/saksham-aggarwal/movie-catalog.git
-cd movie-vault
+cd movie-catalog
 ```
 
 2. Install dependencies:
